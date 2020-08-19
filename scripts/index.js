@@ -22,9 +22,10 @@ window.addEventListener('DOMContentLoaded', (e) => {
 
   //body of snake -- keep track of all components of the snake's body
   //keep snake parts 18pts apart 
-  let body = [{ x, y }]
+  let body = [{ x, y }, { x: x + 18, y }, { x: x + 36, y }, { x: x + 54, y }, { x: x + 72, y }, { x: x + 90, y }, { x: x + 108, y }, { x: x + 126, y }, { x: x + 144, y }]
 
   let dir = directions.RIGHT_ARROW //by default move right
+  let counter = 0
 
   const updateDir = (x, y) => {
     xSpeed = x
@@ -37,15 +38,18 @@ window.addEventListener('DOMContentLoaded', (e) => {
     clear_board(canvas, ctx)
     for (let pos of body) {
       let { x, y } = pos
+
       drawSnake(ctx, x, y)
     }
     validateSnakeMovement()
+    //check for collision
+
 
 
   }
   setInterval(() => {
     draw()
-  }, 100)
+  }, 100);
   /**
    * 
    * @param {*} canvas canvas element from DOM
@@ -65,6 +69,9 @@ window.addEventListener('DOMContentLoaded', (e) => {
     let dx = xSpeed * dirX
     let dy = ySpeed * dirY
     const head = { x: body[0].x + dx, y: body[0].y + dy }
+    if (snakeCollision(head)) {
+      window.alert('Game Over')
+    }
     body.unshift(head)
     body.pop()
     console.log(body)
@@ -102,13 +109,21 @@ window.addEventListener('DOMContentLoaded', (e) => {
       body[0].x = canvas.width
     } else if (body[0].x > canvas.width) {
       body[0].x = 0
-    } else if (body[0].y < 0) {
+    } else if (body[0].y < -1) {
       body[0].y = canvas.height
     } else if (body[0].y > canvas.height) {
       body[0].y = 0
     } else {
       moveSnake(dir[0], dir[1])
     }
+  }
+  const snakeCollision = (pos) => {
+    for (let head of body) {
+      if (pos.x == head.x && pos.y == head.y) {
+        return true
+      }
+    }
+    return false
   }
 
 })
