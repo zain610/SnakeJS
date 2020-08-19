@@ -1,60 +1,70 @@
+const directions = {
+  UP_ARROW: [0, -1],
+  DOWN_ARROW: [0, 1],
+  RIGHT_ARROW: [1, 0],
+  LEFT_ARROW: [-1, 0],
+}
+
+
 window.addEventListener('DOMContentLoaded', (e) => {
   const width = window.innerWidth
   const height = window.innerHeight
   var canvas = document.getElementById('myCanvas')
   let ctx = canvas.getContext("2d")
+  //starting position of snake
   var x = canvas.width / 2
   var y = canvas.height / 2
-  webkitRequestAnimationFrame
-  let counter = 0
+  // direction of snake
+  let xSpeed = 1
+  let ySpeed = 0
+
+  //body of snake -- keep track of all components of the snake's body
+  let body = [{ x, y }, { x: x - 15, y: y }]
+
+  const updateDir = (x, y) => {
+    xSpeed = x
+    ySpeed = y
+  }
+
 
   const draw = () => {
     //do something
-    x += 10
-    y += 10
-    counter += 1
-    createSnake(canvas, ctx, x, y)
-
+    x += 16
+    for (let pos of body) {
+      let { x, y } = pos
+      drawSnake(ctx, x, y)
+    }
   }
   setInterval(draw, 1000)
 
 
 
-
-  const main = () => {
-
-    createSnake(ctx)
-    createBoard()
-
-
-  }
-
-  const createBoard = (x = 100, y = 100) => {
-    var app = document.getElementById('app')
-    const board = document.createElement('div')
-    console.log(width, height)
-    //set the styling for the board
-    board.style.width = '20rem'
-    board.style.height = '20rem'
-    board.style.margin = 'auto'
-    board.style.alignContent = 'center'
-    board.style.backgroundColor = 'black'
-
-    board.appendChild(createSnake(0))
-
-
-    app.appendChild(board)
-  }
-
-  const createSnake = (canvas, context, x, y) => {
-    //create snake
-    console.log(canvas)
-    context.beginPath()
+  /**
+   * 
+   * @param {*} canvas canvas element from DOM
+   * @param {*} context context provides api to render sprites and other visualisations
+   * @param {*} x x coordinate of the snake
+   * @param {*} y y coordinate of the snake
+   */
+  const drawSnake = (context, x, y) => {
+    context.clearRect(0, 0, width, height)
     context.rect(x, y, 16, 16)
     context.fillStyle = "#FF000"
     context.fill()
-    context.closePath()
-
-
   }
+
+
+  window.addEventListener('keydown', e => {
+    switch (e.key) {
+      case 'ArrowUp':
+        console.log('ArrowUp')
+      case 'ArrowDown':
+        console.log('ArrowDown')
+      case 'ArrowRight':
+        console.log('ArrowRight')
+      case 'ArrowLeft':
+        console.log('ArrowLeft')
+    }
+  })
+
 })
