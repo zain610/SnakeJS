@@ -21,8 +21,14 @@ window.addEventListener('DOMContentLoaded', (e) => {
   let ySpeed = 18
 
   //body of snake -- keep track of all components of the snake's body
-  //keep snake parts 18pts apart 
-  let body = [{ x, y }, { x: x + 18, y }, { x: x + 36, y }, { x: x + 54, y }, { x: x + 72, y }, { x: x + 90, y }, { x: x + 108, y }, { x: x + 126, y }, { x: x + 144, y }]
+  //keep snake parts -18pts apart 
+  let body = [
+    { x: 200, y: 200 },
+    { x: 182, y: 200 },
+    { x: 164, y: 200 },
+    { x: 146, y: 200 },
+    { x: 128, y: 200 }
+  ]
 
   let dir = directions.RIGHT_ARROW //by default move right
   let counter = 0
@@ -32,13 +38,24 @@ window.addEventListener('DOMContentLoaded', (e) => {
     ySpeed = y
   }
 
+  /**
+   * Setup method is run at the start of each game adn after the snake is dead. 
+   * We need to reset the score, snakes position, speed and canvas. 
+   */
+  const setup = () => {
+    clear_board(canvas, ctx)
+    body = [{ x: 200, y: 200 }]
+    dir = directions.RIGHT_ARROW
+    xSpeed = 18
+    ySpeed = 18
+  }
+
 
   const draw = () => {
     //do something
     clear_board(canvas, ctx)
     for (let pos of body) {
       let { x, y } = pos
-
       drawSnake(ctx, x, y)
     }
     validateSnakeMovement()
@@ -70,15 +87,14 @@ window.addEventListener('DOMContentLoaded', (e) => {
     let dy = ySpeed * dirY
     const head = { x: body[0].x + dx, y: body[0].y + dy }
     if (snakeCollision(head)) {
-      window.alert('Game Over')
+      window.alert('Game Over!')
+      setup()
     }
     body.unshift(head)
     body.pop()
-    console.log(body)
   }
   // draw a border around the canvas
   function clear_board(canvas, context) {
-    console.log('clear')
     context.clearRect(0, 0, canvas.width, canvas.height);
   }
 
