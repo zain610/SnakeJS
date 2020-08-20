@@ -13,6 +13,9 @@ window.addEventListener('DOMContentLoaded', (e) => {
   const height = window.innerHeight
   var canvas = document.getElementById('myCanvas')
   let ctx = canvas.getContext("2d")
+  //Canvas Height and Width
+  let canvasHeight = canvas.height
+  let canvasWidth = canvas.width
   //starting position of snake
   var x = canvas.width / 2
   var y = canvas.height / 2
@@ -32,6 +35,7 @@ window.addEventListener('DOMContentLoaded', (e) => {
 
   let dir = directions.RIGHT_ARROW //by default move right
   let counter = 0
+  let cherryLocation;
 
   const updateDir = (x, y) => {
     xSpeed = x
@@ -48,12 +52,14 @@ window.addEventListener('DOMContentLoaded', (e) => {
     dir = directions.RIGHT_ARROW
     xSpeed = 18
     ySpeed = 18
+    cherryLocation = generateRandomCoordinate()
   }
 
 
   const draw = () => {
     //do something
     clear_board(canvas, ctx)
+    displayCherry(ctx, cherryLocation[0], cherryLocation[1])
     for (let pos of body) {
       let { x, y } = pos
       drawSnake(ctx, x, y)
@@ -64,9 +70,7 @@ window.addEventListener('DOMContentLoaded', (e) => {
 
 
   }
-  setInterval(() => {
-    draw()
-  }, 100);
+
   /**
    * 
    * @param {*} canvas canvas element from DOM
@@ -86,9 +90,16 @@ window.addEventListener('DOMContentLoaded', (e) => {
     let dx = xSpeed * dirX
     let dy = ySpeed * dirY
     const head = { x: body[0].x + dx, y: body[0].y + dy }
+    //check if next move is part of snake body => snake bites itself  =>  game over
     if (snakeCollision(head)) {
       window.alert('Game Over!')
       setup()
+    }
+    //check if snake is going to bite the apple => increment score and generate new coordinates for apple => 
+    console.log(snakeEats(head))
+    if (snakeEats(head)) {
+      console.log('changing coordinates')
+      cherryLocation = generateRandomCoordinate()
     }
     body.unshift(head)
     body.pop()
@@ -141,5 +152,33 @@ window.addEventListener('DOMContentLoaded', (e) => {
     }
     return false
   }
+
+  /* Methods for cherry */
+
+  const displayCherry = (context, x = 0, y = 0) => {
+    const cherryImage = document.getElementById('myImage')
+    context.drawImage(cherryImage, x, y, 24, 24)
+  }
+
+  const generateRandomCoordinate = () => {
+    let randomX = Math.random() * (canvasWidth - 20)
+    let randomY = Math.random() * (canvasHeight - 20)
+
+    return [randomX, randomY]
+  }
+  const snakeEats = (pos) => {
+    let diffX = Math.abs(pos.x - cherryLocation[0])
+    let diffY = Math.abs(pos.y - cherryLocation[1])
+    console.log(diffX, diffY)
+    if (diffY < 18 && diffX < 18) {
+      return true
+    }
+    return false
+  }
+
+  setup()
+  setInterval(() => {
+    draw()
+  }, 100);
 
 })
