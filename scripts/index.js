@@ -48,25 +48,30 @@ window.addEventListener('DOMContentLoaded', (e) => {
    */
   const setup = () => {
     clear_board(canvas, ctx)
+    counter = 0
     body = [{ x: 200, y: 200 }]
     dir = directions.RIGHT_ARROW
     xSpeed = 18
     ySpeed = 18
     cherryLocation = generateRandomCoordinate()
-  }
 
+  }
+  const updateScore = () => {
+    counter += 1
+    let score = document.getElementById('score')
+    score.innerHTML = counter
+  }
 
   const draw = () => {
     //do something
     clear_board(canvas, ctx)
     displayCherry(ctx, cherryLocation[0], cherryLocation[1])
+    validateSnakeMovement()
     for (let pos of body) {
       let { x, y } = pos
       drawSnake(ctx, x, y)
     }
-    validateSnakeMovement()
     //check for collision
-
 
 
   }
@@ -95,10 +100,10 @@ window.addEventListener('DOMContentLoaded', (e) => {
       window.alert('Game Over!')
       setup()
     }
-    //check if snake is going to bite the apple => increment score and generate new coordinates for apple => 
-    console.log(snakeEats(head))
     if (snakeEats(head)) {
-      console.log('changing coordinates')
+      // add the current cherry to the body of the snake
+      updateScore()
+      body.push(cherryLocation)
       cherryLocation = generateRandomCoordinate()
     }
     body.unshift(head)
@@ -163,13 +168,15 @@ window.addEventListener('DOMContentLoaded', (e) => {
   const generateRandomCoordinate = () => {
     let randomX = Math.random() * (canvasWidth - 20)
     let randomY = Math.random() * (canvasHeight - 20)
+    if (!snakeCollision({ x: randomX, y: randomY })) {
+      return [randomX, randomY]
+    }
+    generateRandomCoordinate()
 
-    return [randomX, randomY]
   }
   const snakeEats = (pos) => {
     let diffX = Math.abs(pos.x - cherryLocation[0])
     let diffY = Math.abs(pos.y - cherryLocation[1])
-    console.log(diffX, diffY)
     if (diffY < 18 && diffX < 18) {
       return true
     }
