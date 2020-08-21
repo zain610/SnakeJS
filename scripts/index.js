@@ -7,47 +7,29 @@ const directions = {
 const boardColor = '#eee'
 const snakeColor = 'lightblue'
 const snakeBorder = '#333'
-
 window.addEventListener('DOMContentLoaded', (e) => {
-  const width = window.innerWidth
-  const height = window.innerHeight
   var canvas = document.getElementById('myCanvas')
   let ctx = canvas.getContext("2d")
   //Canvas Height and Width
-  let canvasHeight = canvas.height
-  let canvasWidth = canvas.width
-  //starting position of snake
-  var x = canvas.width / 2
-  var y = canvas.height / 2
+  const canvasHeight = canvas.height
+  const canvasWidth = canvas.width
   // direction of snake
-  let xSpeed = 18
-  let ySpeed = 18
+  let xSpeed;
+  let ySpeed;
 
   //body of snake -- keep track of all components of the snake's body
   //keep snake parts -18pts apart 
-  let body = [
-    { x: 200, y: 200 },
-    { x: 182, y: 200 },
-    { x: 164, y: 200 },
-    { x: 146, y: 200 },
-    { x: 128, y: 200 }
-  ]
-
-  let dir = directions.RIGHT_ARROW //by default move right
-  let counter = 0
+  let body;
+  let dir;
+  let counter;
   let cherryLocation;
-
-  const updateDir = (x, y) => {
-    xSpeed = x
-    ySpeed = y
-  }
 
   /**
    * Setup method is run at the start of each game adn after the snake is dead. 
    * We need to reset the score, snakes position, speed and canvas. 
    */
   const setup = () => {
-    clear_board(canvas, ctx)
+    clearBoard(ctx, canvasWidth, canvasHeight)
     counter = 0
     body = [{ x: 200, y: 200 }]
     dir = directions.RIGHT_ARROW
@@ -59,12 +41,13 @@ window.addEventListener('DOMContentLoaded', (e) => {
   const updateScore = () => {
     counter += 1
     let score = document.getElementById('score')
-    score.innerHTML = counter
+    //update text on html
+    score.innerHTML = `Score: ${counter}`
   }
 
   const draw = () => {
     //do something
-    clear_board(canvas, ctx)
+    clearBoard(ctx, canvasWidth, canvasHeight)
     displayCherry(ctx, cherryLocation[0], cherryLocation[1])
     validateSnakeMovement()
     for (let pos of body) {
@@ -92,6 +75,7 @@ window.addEventListener('DOMContentLoaded', (e) => {
   }
   //move snake -- most important method 
   const moveSnake = (dirX = 0, dirY = -1) => {
+    //determine next pos based on speed x and y
     let dx = xSpeed * dirX
     let dy = ySpeed * dirY
     const head = { x: body[0].x + dx, y: body[0].y + dy }
@@ -110,8 +94,8 @@ window.addEventListener('DOMContentLoaded', (e) => {
     body.pop()
   }
   // draw a border around the canvas
-  function clear_board(canvas, context) {
-    context.clearRect(0, 0, canvas.width, canvas.height);
+  function clearBoard(context, width, height) {
+    context.clearRect(0, 0, width, height);
   }
 
   //add keyboard controls
@@ -138,12 +122,12 @@ window.addEventListener('DOMContentLoaded', (e) => {
   })
   const validateSnakeMovement = () => {
     if (body[0].x < -1) {
-      body[0].x = canvas.width
-    } else if (body[0].x > canvas.width) {
+      body[0].x = canvasWidth
+    } else if (body[0].x > canvasWidth) {
       body[0].x = 0
     } else if (body[0].y < -1) {
-      body[0].y = canvas.height
-    } else if (body[0].y > canvas.height) {
+      body[0].y = canvasHeight
+    } else if (body[0].y > canvasHeight) {
       body[0].y = 0
     } else {
       moveSnake(dir[0], dir[1])
@@ -183,6 +167,10 @@ window.addEventListener('DOMContentLoaded', (e) => {
     return false
   }
 
+
+
+
+  //initialise gmae
   setup()
   setInterval(() => {
     draw()
