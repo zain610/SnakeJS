@@ -1,12 +1,15 @@
-const directions = {
-  UP_ARROW: [0, -1],
-  DOWN_ARROW: [0, 1],
-  RIGHT_ARROW: [1, 0],
-  LEFT_ARROW: [-1, 0],
+const constants = {
+  directions: {
+    UP_ARROW: [0, -1],
+    DOWN_ARROW: [0, 1],
+    RIGHT_ARROW: [1, 0],
+    LEFT_ARROW: [-1, 0],
+  },
+  boardColor: '#eee',
+  snakeColor: 'lightblue',
+  snakeBorder: '#333',
 }
-const boardColor = '#eee'
-const snakeColor = 'lightblue'
-const snakeBorder = '#333'
+
 window.addEventListener('DOMContentLoaded', (e) => {
   var canvas = document.getElementById('myCanvas')
   let ctx = canvas.getContext("2d")
@@ -14,8 +17,7 @@ window.addEventListener('DOMContentLoaded', (e) => {
   const canvasHeight = canvas.height
   const canvasWidth = canvas.width
   // direction of snake
-  let xSpeed;
-  let ySpeed;
+  let speed = 18
 
   //body of snake -- keep track of all components of the snake's body
   //keep snake parts -18pts apart 
@@ -32,16 +34,15 @@ window.addEventListener('DOMContentLoaded', (e) => {
     clearBoard(ctx, canvasWidth, canvasHeight)
     counter = 0
     body = [{ x: 200, y: 200 }]
-    dir = directions.RIGHT_ARROW
-    xSpeed = 18
-    ySpeed = 18
+    dir = constants.directions.RIGHT_ARROW
     cherryLocation = generateRandomCoordinate()
 
   }
   const updateScore = () => {
     counter += 1
+  }
+  const displayScore = () => {
     let score = document.getElementById('score')
-    //update text on html
     score.innerHTML = `Score: ${counter}`
   }
 
@@ -49,14 +50,12 @@ window.addEventListener('DOMContentLoaded', (e) => {
     //do something
     clearBoard(ctx, canvasWidth, canvasHeight)
     displayCherry(ctx, cherryLocation[0], cherryLocation[1])
+    displayScore()
     validateSnakeMovement()
     for (let pos of body) {
       let { x, y } = pos
       drawSnake(ctx, x, y)
     }
-    //check for collision
-
-
   }
 
   /**
@@ -68,21 +67,22 @@ window.addEventListener('DOMContentLoaded', (e) => {
    */
   const drawSnake = (context, x, y) => {
 
-    context.fillStyle = snakeColor
-    context.strokeStyle = snakeBorder
+    context.fillStyle = constants.snakeColor
+    context.strokeStyle = constants.snakeBorder
     context.fillRect(x, y, 16, 16)
     context.strokeRect(x, y, 16, 16)
   }
   //move snake -- most important method 
   const moveSnake = (dirX = 0, dirY = -1) => {
     //determine next pos based on speed x and y
-    let dx = xSpeed * dirX
-    let dy = ySpeed * dirY
+    let dx = speed * dirX
+    let dy = speed * dirY
     const head = { x: body[0].x + dx, y: body[0].y + dy }
     //check if next move is part of snake body => snake bites itself  =>  game over
     if (snakeCollision(head)) {
       window.alert('Game Over!')
-      setup()
+      //TODO: have this re render the entire application. Instead of setting up again we choose to reload so the game setups for us
+      window.location.reload()
     }
     if (snakeEats(head)) {
       // add the current cherry to the body of the snake
@@ -104,19 +104,19 @@ window.addEventListener('DOMContentLoaded', (e) => {
     switch (e.key) {
       case 'ArrowUp':
         console.log('ArrowUp')
-        dir = directions.UP_ARROW
+        dir = constants.directions.UP_ARROW
         break
       case 'ArrowDown':
         console.log('ArrowDown')
-        dir = directions.DOWN_ARROW
+        dir = constants.directions.DOWN_ARROW
         break
       case 'ArrowRight':
         console.log('ArrowRight')
-        dir = directions.RIGHT_ARROW
+        dir = constants.directions.RIGHT_ARROW
         break
       case 'ArrowLeft':
         console.log('ArrowLeft')
-        dir = directions.LEFT_ARROW
+        dir = constants.directions.LEFT_ARROW
         break
     }
   })
@@ -161,7 +161,7 @@ window.addEventListener('DOMContentLoaded', (e) => {
   const snakeEats = (pos) => {
     let diffX = Math.abs(pos.x - cherryLocation[0])
     let diffY = Math.abs(pos.y - cherryLocation[1])
-    if (diffY < 18 && diffX < 18) {
+    if (diffY < speed && diffX < speed) {
       return true
     }
     return false
